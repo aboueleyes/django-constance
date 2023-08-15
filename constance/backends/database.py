@@ -67,7 +67,7 @@ class DatabaseBackend(Backend):
             print(values)
             for key, value in values.items():
                 yield keys[key], value
-            keys = keys.keys() - values.keys()
+            keys = {key: value for key, value in keys.items() if key not in values}
             if not keys:
                 return
         with contextlib.suppress(OperationalError, ProgrammingError):
