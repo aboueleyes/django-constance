@@ -64,7 +64,7 @@ class DatabaseBackend(Backend):
         keys = {self.add_prefix(key): key for key in keys}
         if self._cache and fallback:
             values = self._cache.get_many(keys)
-            if len(values) != len(keys):
+            if len(values.keys()) != len(keys.keys()):
                 self.autofill()
                 values = self._cache.get_many(keys)
             for key, value in values.items():
