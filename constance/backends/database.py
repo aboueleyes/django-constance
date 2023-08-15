@@ -64,7 +64,10 @@ class DatabaseBackend(Backend):
         keys = {self.add_prefix(key): key for key in keys}
         if self._cache:
             values = self._cache.get_many(keys)
+            print(values)
             for key, value in values.items():
+                if value is None:
+                    self.autofill()
                 yield keys[key], value
             keys = set(keys) - set(values)
             if not keys:
