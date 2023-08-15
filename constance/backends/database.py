@@ -19,7 +19,7 @@ from constance import settings, signals, config
 logger = logging.getLogger(__name__)
 
 def warn(message):
-    warnings.showwarning(message, category=RuntimeWarning, stacklevel=2)
+    warnings.showwarning(message, category=RuntimeWarning, filename=__file__, lineno=1)
 
 class DatabaseBackend(Backend):
     def __init__(self):
