@@ -63,20 +63,20 @@ class DatabaseBackend(Backend):
         self._cache.set_many(autofill_values, timeout=self._autofill_timeout)
 
     def mget(self, keys, fallback=True):
-        warnings.warn("mget: %s", keys)
+        warnings.showwarning("mget: %s", keys)
         if not keys:
             return
         keys = {self.add_prefix(key): key for key in keys}
         if self._cache and fallback:
-            warnings.warn("mget: cache")
+            warnings.showwarning("mget: cache")
             values = self._cache.get_many(keys)
-            warnings.warn("mget: cache %s", values)
+            warnings.showwarning("mget: cache %s", values)
             if len(values.keys()) != len(keys.keys()):
-                warnings.warn("mget: cache miss")
+                warnings.showwarning("mget: cache miss")
                 self.autofill()
 
                 values = self._cache.get_many(keys)
-                warnings.warn("mget: cache %s", values)
+                warnings.showwarning("mget: cache %s", values)
             for key, value in values.items():
                 yield keys[key], value
             keys = {key: value for key, value in keys.items() if key not in values}
