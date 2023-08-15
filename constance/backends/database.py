@@ -54,15 +54,15 @@ class DatabaseBackend(Backend):
         if self._cache.get(full_cachekey):
             return
         autofill_values = {full_cachekey: 1}
-        for key, value in self.mget(settings.CONFIG):
+        for key, value in self.mget(settings.CONFIG, fallback=False):
             autofill_values[self.add_prefix(key)] = value
         self._cache.set_many(autofill_values, timeout=self._autofill_timeout)
 
-    def mget(self, keys):
+    def mget(self, keys, fallback=True):
         if not keys:
             return
         keys = {self.add_prefix(key): key for key in keys}
-        if self._cache:
+        if self._cache and fallback:
             values = self._cache.get_many(keys)
             print(values)
             for key, value in values.items():
@@ -70,7 +70,9 @@ class DatabaseBackend(Backend):
             keys = {key: value for key, value in keys.items() if key not in values}
             if not keys:
                 return
-            print(keys)
+            self.autofill()
+            values = self._cache.get_many(keys)
+
         with contextlib.suppress(OperationalError, ProgrammingError):
             stored = self._model._default_manager.filter(key__in=keys)
             for const in stored:
