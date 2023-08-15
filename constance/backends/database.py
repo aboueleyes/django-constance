@@ -66,10 +66,8 @@ class DatabaseBackend(Backend):
             values = self._cache.get_many(keys)
             print(values)
             for key, value in values.items():
-                if value is None:
-                    self.autofill()
                 yield keys[key], value
-            keys = list(set(keys) - set(values))
+            keys = set(keys) - set(values)
             if not keys:
                 return
         with contextlib.suppress(OperationalError, ProgrammingError):
