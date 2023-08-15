@@ -64,14 +64,14 @@ class DatabaseBackend(Backend):
         keys = {self.add_prefix(key): key for key in keys}
         if self._cache and fallback:
             values = self._cache.get_many(keys)
-            print(values)
+            if len(values) != len(keys):
+                self.autofill()
+                values = self._cache.get_many(keys)
             for key, value in values.items():
                 yield keys[key], value
             keys = {key: value for key, value in keys.items() if key not in values}
             if not keys:
                 return
-            self.autofill()
-            values = self._cache.get_many(keys)
 
         with contextlib.suppress(OperationalError, ProgrammingError):
             stored = self._model._default_manager.filter(key__in=keys)
