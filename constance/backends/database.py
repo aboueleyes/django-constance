@@ -1,4 +1,5 @@
 import contextlib
+import logging
 from django.core.cache import caches
 from django.core.cache.backends.locmem import LocMemCache
 from django.core.exceptions import ImproperlyConfigured
@@ -13,6 +14,8 @@ from django.db.models.signals import post_save
 from constance.backends import Backend
 from constance import settings, signals, config
 
+
+logger = logging.getLogger(__name__)
 
 class DatabaseBackend(Backend):
     def __init__(self):
@@ -59,14 +62,20 @@ class DatabaseBackend(Backend):
         self._cache.set_many(autofill_values, timeout=self._autofill_timeout)
 
     def mget(self, keys, fallback=True):
+        logger.info("mget: %s", keys)
         if not keys:
             return
         keys = {self.add_prefix(key): key for key in keys}
         if self._cache and fallback:
+            logger.info("mget: cache")
             values = self._cache.get_many(keys)
+            logger.info("mget: cache %s", values)
             if len(values.keys()) != len(keys.keys()):
+                logger.info("mget: cache miss")
                 self.autofill()
+
                 values = self._cache.get_many(keys)
+                logger.info("mget: cache %s", values)
             for key, value in values.items():
                 yield keys[key], value
             keys = {key: value for key, value in keys.items() if key not in values}
