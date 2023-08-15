@@ -64,6 +64,7 @@ class DatabaseBackend(Backend):
         for key, value in self.mget(settings.CONFIG, fallback=False):
             autofill_values[self.add_prefix(key)] = value
         self._cache.set_many(autofill_values, timeout=self._autofill_timeout)
+        warn(f"autofill: {autofill_values}")
 
     def mget(self, keys, fallback=True):
         warn(f"mget: {keys}")
