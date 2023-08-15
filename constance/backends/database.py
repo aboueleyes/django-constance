@@ -70,6 +70,7 @@ class DatabaseBackend(Backend):
             keys = {key: value for key, value in keys.items() if key not in values}
             if not keys:
                 return
+            print(keys)
         with contextlib.suppress(OperationalError, ProgrammingError):
             stored = self._model._default_manager.filter(key__in=keys)
             for const in stored:
