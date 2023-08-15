@@ -69,7 +69,7 @@ class DatabaseBackend(Backend):
                 if value is None:
                     self.autofill()
                 yield keys[key], value
-            keys = set(keys) - set(values)
+            keys = list(set(keys) - set(values))
             if not keys:
                 return
         with contextlib.suppress(OperationalError, ProgrammingError):
